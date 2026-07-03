@@ -124,9 +124,14 @@ def walk_items(root):
         elif tag == "departamento": departamento = node.get("nombre", departamento)
         elif tag == "epigrafe": epigrafe = node.get("nombre", epigrafe)
         elif tag == "item":
-            yield {"id": node.get("id",""),
+            url_xml = _child_text(node,"url_xml")
+            iid = node.get("id","") or _child_text(node,"identificador")
+            if not iid and url_xml:
+                m = re.search(r"id=([A-Za-z0-9\-]+)", url_xml)
+                if m: iid = m.group(1)
+            yield {"id": iid,
                    "titulo": _child_text(node,"titulo"),
-                   "url_xml": _child_text(node,"url_xml"),
+                   "url_xml": url_xml,
                    "seccion": seccion, "departamento": departamento, "epigrafe": epigrafe}
         for ch in list(node):
             yield from rec(ch, seccion, departamento, epigrafe)
@@ -255,6 +260,13 @@ def main():
         root = fetch_sumario(d)
         if root is None: continue
         n_dias += 1
+        if n_dias == 1:   # diagnóstico único: estructura real del primer anuncio
+            for el in root.iter():
+                if _ln(el.tag) == "item":
+                    hijos = [f"{_ln(c.tag)}={ (c.text or '')[:40] }" for c in el]
+                    print("DIAG-ITEM · attrs:", dict(el.attrib), "· hijos:", hijos[:6],
+                          file=sys.stderr)
+                    break
         for it in walk_items(root):
             n_items += 1
             blob = f"{it['titulo']} {it['epigrafe']} {it['departamento']}"
