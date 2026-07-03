@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subastas · Catalunya — Novedades</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --canvas:#EBEEEF; --surface:#FFFFFF; --surface-2:#F5F7F7;
+    --ink:#15242E; --ink-soft:#5B6C76; --ink-faint:#8A99A1;
+    --petrol:#0E3A4A; --petrol-2:#12556B; --teal:#1B7F8C;
+    --green:#2F7D57; --amber:#C08420; --red:#BB463B;
+    --line:#D9DEE0; --line-soft:#E7EBEC;
+    --green-bg:#E7F1EB; --amber-bg:#F6EEDD; --red-bg:#F5E4E1;
+    --shadow:0 1px 2px rgba(21,36,46,.06), 0 8px 24px rgba(21,36,46,.05);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"IBM Plex Sans",system-ui,sans-serif;background:var(--canvas);color:var(--ink);
+    -webkit-font-smoothing:antialiased;line-height:1.4;padding-bottom:80px}
+  .mono{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+
+  header{position:sticky;top:0;z-index:20;background:var(--petrol);color:#EAF1F2;border-bottom:1px solid #0a2c38}
+  .bar{max-width:1180px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  .brand{display:flex;flex-direction:column;line-height:1.15}
+  .brand .eyebrow{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#8FB3BC;font-weight:600}
+  .brand h1{font-size:18px;font-weight:600;letter-spacing:-.01em}
+  .brand h1 span{color:#6FCAD6}
+  .meta{margin-left:auto;display:flex;align-items:center;gap:22px}
+  .meta .stat{display:flex;flex-direction:column;align-items:flex-end;line-height:1.1}
+  .meta .stat b{font-family:"IBM Plex Mono",monospace;font-size:20px;font-weight:600;color:#fff}
+  .meta .stat small{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#8FB3BC}
+
+  .controls{max-width:1180px;margin:0 auto;padding:16px 24px 8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .controls .group{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:4px 6px 4px 12px}
+  .controls label{font-size:11px;color:var(--ink-soft);font-weight:600;letter-spacing:.02em}
+  .controls select{border:none;background:transparent;font-family:inherit;font-size:13px;color:var(--ink);font-weight:500;padding:4px;cursor:pointer;outline:none}
+  .controls .spacer{flex:1}
+  .seg{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .seg button{border:none;background:transparent;font-family:inherit;font-size:12px;font-weight:600;color:var(--ink-soft);padding:8px 12px;cursor:pointer}
+  .seg button.on{background:var(--petrol);color:#fff}
+  .disclaimer{max-width:1180px;margin:2px auto 0;padding:0 24px;font-size:11.5px;color:var(--ink-faint)}
+  .disclaimer b{color:var(--amber);font-weight:600}
+
+  main{max-width:1180px;margin:14px auto 0;padding:0 24px;display:flex;flex-direction:column;gap:12px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);
+    overflow:hidden;display:grid;grid-template-columns:88px 1fr;transition:border-color .15s}
+  .card:hover{border-color:#B9C3C6}
+
+  .spine{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:16px 8px;color:#fff}
+  .spine .score{font-family:"IBM Plex Mono",monospace;font-size:27px;font-weight:600;line-height:1}
+  .spine .score small{display:block;font-size:9px;letter-spacing:.12em;opacity:.85;font-weight:500;margin-top:3px}
+  .spine .tag{font-size:9.5px;letter-spacing:.05em;text-transform:uppercase;font-weight:600;opacity:.95}
+  .s-green{background:linear-gradient(160deg,#2F7D57,#256545)}
+  .s-amber{background:linear-gradient(160deg,#C08420,#9E6c19)}
+  .s-red{background:linear-gradient(160deg,#BB463B,#993830)}
+
+  .body{padding:0;min-width:0}
+  .riskband{background:var(--red);color:#fff;font-size:12px;font-weight:600;padding:7px 18px;display:flex;align-items:center;gap:8px;letter-spacing:.01em}
+  .riskband.medio{background:var(--amber)}
+  .inner{padding:14px 18px 16px}
+  .row1{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .addr{font-size:16px;font-weight:600;letter-spacing:-.01em}
+  .muni{font-size:13px;color:var(--ink-soft);font-weight:500}
+  .pin{font-size:11.5px;font-weight:600;color:var(--petrol-2);text-decoration:none;background:#EAF1F2;border:1px solid #CFE0E3;padding:2px 8px;border-radius:20px;white-space:nowrap}
+  .pin:hover{background:var(--petrol);color:#fff;border-color:var(--petrol)}
+  .roiviz{margin:12px 0 4px}
+  .roibar{display:flex;height:34px;border-radius:7px;overflow:hidden;border:1px solid var(--line)}
+  .roibar .inv{background:var(--petrol);color:#EAF1F2;display:flex;align-items:center;padding:0 10px;font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;white-space:nowrap;min-width:0}
+  .roibar .ben{background:linear-gradient(90deg,#3E9A6D,#2F7D57);color:#fff;display:flex;align-items:center;justify-content:center;font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:700;white-space:nowrap;min-width:0}
+  .roinum{display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;font-size:12px;color:var(--ink-soft)}
+  .roinum .big{font-family:"IBM Plex Mono",monospace;font-size:19px;font-weight:700}
+  .roinum .big.pos{color:var(--green)} .roinum .big.neg{color:var(--red)}
+  .badges{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+  .badge{font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:20px;letter-spacing:.02em;white-space:nowrap}
+  .b-org{background:var(--surface-2);color:var(--petrol-2);border:1px solid var(--line)}
+  .b-occ{background:var(--red-bg);color:var(--red)} .b-free{background:var(--green-bg);color:var(--green)} .b-unk{background:var(--amber-bg);color:var(--amber)}
+  .b-days{background:#EAF1F2;color:var(--petrol-2);border:1px solid #CFE0E3}
+  .b-days.urgent{background:var(--red-bg);color:var(--red);border-color:transparent}
+  .b-me{background:var(--petrol);color:#fff} .b-inv{background:#E9EDEE;color:var(--ink-soft);border:1px solid var(--line)}
+
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:2px 18px;margin-top:13px}
+  .kpi{display:flex;flex-direction:column;gap:1px}
+  .kpi .lab{font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-faint);font-weight:600}
+  .kpi .val{font-family:"IBM Plex Mono",monospace;font-size:16px;font-weight:600}
+  .kpi .val.pos{color:var(--green)} .kpi .val.neg{color:var(--red)} .kpi .val.warn{color:var(--amber)}
+  .kpi .sub{font-size:10.5px;color:var(--ink-faint)}
+
+  .marginwrap{margin-top:15px}
+  .mtrack{position:relative;height:30px;background:var(--green-bg);border:1px solid var(--line-soft);border-radius:6px;overflow:hidden}
+  .mCost{position:absolute;top:0;left:0;bottom:0}
+  .mCost.g{background:linear-gradient(90deg,#3E9A6D,#2F7D57)} .mCost.a{background:linear-gradient(90deg,#D29A3B,#C08420)} .mCost.r{background:linear-gradient(90deg,#CD5B50,#BB463B)}
+  .mSalida{position:absolute;top:0;bottom:0;width:2px;background:#fff;opacity:.75}
+  .mSalida::after{content:"salida";position:absolute;top:2px;left:4px;font-size:8.5px;color:#fff;font-weight:600;white-space:nowrap;font-family:"IBM Plex Mono",monospace}
+  .mCostLab{position:absolute;top:50%;transform:translateY(-50%);font-family:"IBM Plex Mono",monospace;font-size:11px;color:#fff;font-weight:600;white-space:nowrap}
+  .mMarginLab{position:absolute;top:50%;transform:translateY(-50%);font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--green);font-weight:600;white-space:nowrap}
+  .mlabels{display:flex;justify-content:space-between;margin-top:5px;font-size:10.5px;color:var(--ink-soft)}
+  .mlabels .mkt{font-weight:600;color:var(--ink)}
+
+  .expandbtn{margin-top:12px;font-size:12px;font-weight:600;color:var(--petrol-2);background:none;border:none;cursor:pointer;padding:4px 0;display:inline-flex;align-items:center;gap:5px}
+  .expandbtn:hover{color:var(--teal)}
+  .chev{transition:transform .2s}
+  .card.open .chev{transform:rotate(90deg)}
+
+  .dossier{display:none;grid-column:1 / -1;border-top:1px solid var(--line);background:var(--surface-2);padding:18px 22px 20px}
+  .card.open .dossier{display:block}
+  .dgrid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  .dsec h4{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--petrol-2);font-weight:700;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--line)}
+  .drow{display:flex;justify-content:space-between;gap:12px;padding:4px 0;font-size:13px;border-bottom:1px dotted var(--line-soft)}
+  .drow span:first-child{color:var(--ink-soft)}
+  .drow span:last-child{font-family:"IBM Plex Mono",monospace;font-weight:500;text-align:right}
+  .dsub{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;margin:13px 0 3px}
+  .dsub:first-child{margin-top:0}
+  .drow.add span:first-child{padding-left:10px}
+  .drow.tot{border-bottom:none;border-top:1.5px solid var(--petrol);margin-top:1px;padding-top:6px}
+  .drow.tot span{font-weight:700} .drow.tot span:last-child{color:var(--petrol-2)}
+  .drow.hl span:last-child{color:var(--green);font-weight:700}
+  .drow.hl.neg span:last-child{color:var(--red)}
+  .risklist{margin-top:14px;display:flex;flex-direction:column;gap:6px}
+  .risk{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;padding:8px 11px;border-radius:7px;background:#fff;border:1px solid var(--line)}
+  .risk .lv{font-size:9px;font-weight:700;letter-spacing:.06em;padding:2px 6px;border-radius:4px;flex-shrink:0;margin-top:1px}
+  .risk.alto .lv{background:var(--red-bg);color:var(--red)} .risk.medio .lv{background:var(--amber-bg);color:var(--amber)} .risk.info .lv{background:#E4EAEB;color:var(--ink-soft)}
+  .risk.alto{border-left:3px solid var(--red)} .risk.medio{border-left:3px solid var(--amber)}
+  .why{background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin-top:12px;font-size:12.5px;color:var(--ink-soft);line-height:1.55}
+  .why b{color:var(--ink)}
+  .why .chip{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11px;padding:1px 6px;border-radius:4px;margin:0 1px;font-weight:600}
+  .chip.p{background:var(--green-bg);color:var(--green)} .chip.n{background:var(--red-bg);color:var(--red)} .chip.z{background:var(--amber-bg);color:var(--amber)}
+  .dlinks{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+  .dlink{font-size:12px;font-weight:600;color:#fff;background:var(--petrol);padding:8px 14px;border-radius:7px;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+  .dlink.ghost{background:#fff;color:var(--petrol);border:1px solid var(--line)}
+  .dlink:hover{background:var(--petrol-2)} .dlink.ghost:hover{background:var(--surface-2)}
+
+  .method{max-width:1180px;margin:34px auto 0;padding:22px 24px;border-top:1px solid var(--line)}
+  .method h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--petrol-2);font-weight:700;margin-bottom:14px}
+  .mcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px}
+  .mcard{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .mcard .t{font-size:13px;font-weight:600;margin-bottom:5px;display:flex;align-items:center;gap:7px}
+  .mcard .t .dot{width:9px;height:9px;border-radius:50%}
+  .mcard p{font-size:12px;color:var(--ink-soft);line-height:1.5}
+  .mcard .f{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--petrol-2);background:var(--surface-2);padding:2px 6px;border-radius:4px;display:inline-block;margin-top:6px}
+  .empty{text-align:center;padding:60px 20px;color:var(--ink-faint);font-size:14px}
+
+  @media(max-width:760px){
+    .kpis{grid-template-columns:repeat(2,1fr);gap:10px 18px}
+    .dgrid{grid-template-columns:1fr}
+    .meta{width:100%;justify-content:flex-start;margin-left:0}
+    .badges{margin-left:0;width:100%}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <div class="brand">
+      <div class="eyebrow">Portal de Subastas · BOE</div>
+      <h1>Subastas <span>Catalunya</span> · Inmuebles</h1>
+    </div>
+    <div class="meta">
+      <div class="stat"><b id="mCount">—</b><small>Novedades</small></div>
+      <div class="stat"><b id="mMe">—</b><small>Para ti &lt;150k</small></div>
+      <div class="stat"><b id="mRisk">—</b><small>Con riesgo alto</small></div>
+      <div class="stat"><b id="mDate">—</b><small>Actualizado</small></div>
+    </div>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="seg" id="segMe">
+    <button data-v="" class="on">Todas</button>
+    <button data-v="me">Para ti &lt;150k</button>
+    <button data-v="inv">Inversores ≥150k</button>
+  </div>
+  <div class="group"><label>Provincia</label><select id="fProv"><option value="">Todas</option></select></div>
+  <div class="group"><label>Tipo</label><select id="fTipo"><option value="">Todos</option></select></div>
+  <div class="group"><label>Situación</label><select id="fPos"><option value="">Todas</option><option>Sin posesión</option><option>Ocupado</option><option>Libre</option><option>Desconocida</option></select></div>
+  <div class="group"><label>Riesgo máx.</label><select id="fRisk"><option value="alto">Cualquiera</option><option value="medio">Solo medio/bajo</option><option value="info">Solo sin riesgo relevante</option></select></div>
+  <div class="spacer"></div>
+  <div class="group"><label>Ordenar</label><select id="fSort">
+    <option value="score">Score</option>
+    <option value="roi">ROI a la venta %</option>
+    <option value="marginReal">Beneficio a la venta €</option>
+    <option value="prob">Prob. conseguirlo</option>
+    <option value="days">Días restantes</option>
+  </select></div>
+</div>
+<div class="disclaimer"><b>Prototipo con datos de ejemplo.</b> Precio final esperado, competencia y valoraciones son estimaciones del modelo; verificar cargas, posesión, superficie real y nota simple antes de pujar.</div>
+
+<main id="list"></main>
+
+<section class="method">
+  <h3>Cómo se puntúa cada subasta</h3>
+  <div class="mcols">
+    <div class="mcard">
+      <div class="t"><span class="dot" style="background:var(--teal)"></span>ROI sobre inversión (40%)</div>
+      <p>El retorno sobre lo que pones, no el descuento de escaparate: beneficio a la venta dividido entre el coste total (puja + ITP + cargas), con el precio de remate estimado según la zona.</p>
+      <span class="f">(venta − coste total) / coste total</span>
+    </div>
+    <div class="mcard">
+      <div class="t"><span class="dot" style="background:var(--petrol-2)"></span>Probabilidad de conseguirlo (18%)</div>
+      <p>Zona muy demandada (BCN centro) = mucha puja y difícil de ganar. Zona con poca competencia o subastas que quedan desiertas = más fácil llevártelo con margen.</p>
+      <span class="f">↓ competencia + histórico desiertas</span>
+    </div>
+    <div class="mcard">
+      <div class="t"><span class="dot" style="background:var(--red)"></span>Cargas subsistentes (15%)</div>
+      <p>Cargas anteriores que no se cancelan con el remate: las asumes tú. Penaliza según su peso sobre el valor de subasta.</p>
+      <span class="f">penaliza cargas / valor subasta</span>
+    </div>
+    <div class="mcard">
+      <div class="t"><span class="dot" style="background:var(--amber)"></span>Situación y riesgo posesorio (15%)</div>
+      <p>Ocupado = coste y plazo de desalojo. Proindiviso o vivienda habitual = complejidad legal. Libre suma; desconocida resta por incertidumbre.</p>
+      <span class="f">Libre &gt; Sin posesión &gt; Desconocida &gt; Ocupado</span>
+    </div>
+    <div class="mcard">
+      <div class="t"><span class="dot" style="background:var(--green)"></span>Liquidez de reventa (7%)</div>
+      <p>El contrapeso de lo rural: barato y con margen, pero cuesta revenderlo. Vivienda en ciudad se coloca antes que un solar en el interior.</p>
+      <span class="f">tipo + demanda de zona</span>
+    </div>
+    <div class="mcard" style="background:var(--petrol);color:#EAF1F2;border-color:#0a2c38">
+      <div class="t" style="color:#fff">Qué más vigila el sistema</div>
+      <p style="color:#B7CDD3">Superficie registral vs real, proindiviso (%finca), arrendatarios con retracto, TPO 20% grandes tenedores, retirada de subasta por pago del deudor, y cesión de remate.</p>
+      <span class="f" style="background:#0a2c38;color:#8FD3DE">alertas automáticas del edicto</span>
+    </div>
+  </div>
+</section>
+
+<script>
+/* Los datos se cargan de data.json (generado por el rastreador). */
+let AUCTIONS = [];
+
+/* Tabla de zona (proxy de demanda / histórico). El rastreador la calcula
+   con el histórico real de adjudicaciones del BOE por municipio y tipo. */
+const ZONA = {
+  "Barcelona":            {eurM2:4200, comp:92, uplift:1.62, desierta:8},
+  "L'Hospitalet de l'Infant":{eurM2:1550, comp:38, uplift:1.06, desierta:42},
+  "Girona":               {eurM2:2100, comp:62, uplift:1.24, desierta:22},
+  "Terrassa":             {eurM2:2000, comp:58, uplift:1.20, desierta:25},
+  "Tarragona":            {eurM2:1900, comp:55, uplift:1.18, desierta:28},
+  "Vic":                  {eurM2:1700, comp:45, uplift:1.08, desierta:38}
+};
+const ZONA_DEF = {eurM2:1800, comp:50, uplift:1.15, desierta:30};
+
+let TODAY = new Date();
+const eur = n => n==null?"—":n.toLocaleString("es-ES",{maximumFractionDigits:0})+" €";
+const pct = n => (n*100).toFixed(0)+"%";
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+function itp(v){ return v<=600000 ? v*0.10 : v*0.11; }         // Cataluña, comprador no gran tenedor
+function liquidez(tipo,prov){
+  const t={Vivienda:0.9,Local:0.6,Garaje:0.7,Solar:0.35,Nave:0.4,Trastero:0.5}[tipo]??0.5;
+  const p={Barcelona:1,Girona:0.8,Tarragona:0.75,Lleida:0.6}[prov]??0.7;
+  return clamp(0.55*t+0.45*p);
+}
+
+function analyze(a){
+  const z = ZONA[a.muni] || ZONA_DEF;
+  const finalEsp = clamp(a.salida*z.uplift, a.salida, a.mercadoEst);   // remate esperado, tope mercado
+  const costeFinal = finalEsp + itp(finalEsp) + a.cargas;
+  const costeSalida = a.salida + itp(a.salida) + a.cargas;
+  const marginReal = a.mercadoEst - costeFinal;
+  const marginRealPct = a.mercadoEst>0 ? marginReal/a.mercadoEst : 0;
+  const roi = costeFinal>0 ? marginReal/costeFinal : 0;               // retorno sobre capital invertido
+  const eurM2Venta = a.m2 ? Math.round(a.mercadoEst/a.m2) : null;
+  const descuentoSalida = a.valorSubasta>0 ? (a.valorSubasta-a.salida)/a.valorSubasta : 0;
+  const yieldReal = costeFinal>0 ? (a.alquilerEst*12)/costeFinal : 0;
+  const eurM2Entrada = a.m2 ? a.salida/a.m2 : null;
+  const cargasRatio = a.valorSubasta>0 ? a.cargas/a.valorSubasta : 0;
+  const dias = Math.round((new Date(a.fin)-TODAY)/86400000);
+  const u70=a.valorSubasta*0.70, u50=a.valorSubasta*0.50;
+  const probConseguir = clamp(0.12 + 0.72*(1-z.comp/100) + 0.25*(z.desierta/100), 0, 0.95);
+
+  // riesgos
+  const risks=[];
+  if(a.pos==="Ocupado") risks.push({lvl:"alto",txt:"Inmueble ocupado: coste y plazo de desalojo no incluidos en el cálculo."});
+  else if(a.pos==="Desconocida") risks.push({lvl:"medio",txt:"Situación posesoria desconocida: puede estar ocupado."});
+  if(a.cuota<100) risks.push({lvl:"alto",txt:`Solo se subasta el ${a.cuota}% de la finca (proindiviso), no el pleno dominio.`});
+  if(cargasRatio>=0.15) risks.push({lvl:"alto",txt:`Cargas subsistentes de ${eur(a.cargas)} (${pct(cargasRatio)} del valor) que asume el comprador.`});
+  else if(a.cargas>0) risks.push({lvl:"medio",txt:`Cargas subsistentes de ${eur(a.cargas)} que asume el comprador.`});
+  if(a.viviendaHabitual) risks.push({lvl:"medio",txt:"Posible vivienda habitual del deudor: reglas de puja 70%/50% y lanzamiento más lento."});
+  if(a.visitable===false) risks.push({lvl:"medio",txt:"No visitable: estado interior desconocido, presupuestar reforma con holgura."});
+  (a.flags||[]).forEach(f=>risks.push(f));
+  if(z.comp>=80) risks.push({lvl:"info",txt:"Zona muy demandada: se adjudicará cerca de mercado, margen realizable bajo."});
+  const topRisk = risks.some(r=>r.lvl==="alto")?"alto":risks.some(r=>r.lvl==="medio")?"medio":"info";
+
+  // sub-scores
+  const sMargin=clamp(roi/0.80);                 // ROI 80% = máximo; premia el retorno sobre inversión
+  const sProb=clamp(probConseguir/0.95);
+  const sCargas=1-clamp(cargasRatio/0.30);
+  let sPos=({Libre:1,"Sin posesión":0.6,Desconocida:0.4,Ocupado:0.15}[a.pos]??0.4);
+  sPos*=(a.cuota/100); if(a.viviendaHabitual) sPos*=0.8;
+  const sLiq=liquidez(a.tipo,a.prov);
+  const sYield=a.alquilerEst>0?clamp((yieldReal-0.03)/0.06):0.45;
+  const score=Math.round(100*(0.40*sMargin+0.18*sProb+0.15*sCargas+0.15*sPos+0.07*sLiq+0.05*sYield));
+  const band=score>=70?"green":score>=50?"amber":"red";
+  const segment = costeFinal<150000 ? "me":"inv";
+
+  return {z,finalEsp,costeFinal,costeSalida,marginReal,marginRealPct,roi,eurM2Venta,descuentoSalida,yieldReal,
+    eurM2Entrada,cargasRatio,dias,u70,u50,probConseguir,risks,topRisk,segment,score,band,
+    subs:{sMargin,sProb,sCargas,sPos,sLiq,sYield}};
+}
+
+let data = [];
+
+function fillSelect(id,vals){const el=document.getElementById(id);[...new Set(vals)].sort().forEach(v=>{const o=document.createElement("option");o.textContent=v;el.appendChild(o);});}
+function posClass(p){return p==="Ocupado"?"b-occ":p==="Libre"?"b-free":"b-unk";}
+
+function card(d){
+  const k=d.k, mkt=d.mercadoEst;
+  const salidaPct=clamp(d.salida/mkt)*100, finalPct=clamp(k.finalEsp/mkt)*100;
+  const marginCls=k.band==="green"?"g":k.band==="amber"?"a":"r";
+  const daysUrgent=k.dias<=4?"urgent":"";
+  const risk = k.topRisk!=="info" ? k.risks.find(r=>r.lvl===k.topRisk) : null;
+  const eurM2Mkt = k.z.eurM2;
+  return `<article class="card" data-prov="${d.prov}" data-tipo="${d.tipo}" data-pos="${d.pos}" data-seg="${k.segment}"
+      data-risk="${k.topRisk}" data-score="${k.score}" data-marginReal="${k.marginReal}" data-marginRealPct="${k.marginRealPct}" data-prob="${k.probConseguir}" data-days="${k.dias}">
+    <div class="spine s-${k.band}"><div class="score">${k.score}<small>SCORE</small></div><div class="tag">${d.tipo}</div></div>
+    <div class="body">
+      ${risk?`<div class="riskband ${k.topRisk==='alto'?'':'medio'}">⚠ ${k.topRisk==='alto'?'RIESGO ALTO':'ATENCIÓN'} · ${risk.txt}</div>`:""}
+      <div class="inner">
+        <div class="row1">
+          <span class="addr">${d.addr}</span>
+          <span class="muni">${d.muni} · ${d.prov}</span>
+          <a class="pin" href="https://www.google.com/maps/search/${encodeURIComponent(d.addr+', '+d.muni)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">📍 Mapa</a>
+          <span class="badges">
+            <span class="badge ${k.segment==='me'?'b-me':'b-inv'}">${k.segment==='me'?'Para ti':'Inversores'}</span>
+            <span class="badge b-org">${d.org.split("·")[0].split("nº")[0].trim().slice(0,26)}</span>
+            <span class="badge ${posClass(d.pos)}">${d.pos}</span>
+            <span class="badge b-days ${daysUrgent}">${k.dias>0?k.dias+" días":"Cierra hoy"}</span>
+          </span>
+        </div>
+        <div class="kpis">
+          <div class="kpi"><span class="lab">ROI a la venta</span><span class="val mono ${k.roi>0?'pos':'neg'}">${pct(k.roi)}</span><span class="sub">sobre ${eur(k.costeFinal)} inv.</span></div>
+          <div class="kpi"><span class="lab">Beneficio a la venta</span><span class="val mono ${k.marginReal>0?'pos':'neg'}">${eur(k.marginReal)}</span><span class="sub">venta est. ${eur(d.mercadoEst)}</span></div>
+          <div class="kpi"><span class="lab">Prob. conseguirlo</span><span class="val mono ${k.probConseguir>=0.5?'pos':k.probConseguir>=0.3?'warn':'neg'}">${pct(k.probConseguir)}</span><span class="sub">competencia ${k.z.comp}/100</span></div>
+          <div class="kpi"><span class="lab">Rent. alquiler</span><span class="val mono">${d.alquilerEst>0?(k.yieldReal*100).toFixed(1)+'%':'—'}</span><span class="sub">${k.eurM2Entrada?Math.round(k.eurM2Entrada).toLocaleString("es-ES")+' vs '+eurM2Mkt.toLocaleString("es-ES")+' €/m²':''}</span></div>
+        </div>
+        <div class="marginwrap">
+          <div class="mtrack">
+            <div class="mCost ${marginCls}" style="width:${finalPct}%"></div>
+            <div class="mSalida" style="left:${salidaPct}%"></div>
+            <div class="mCostLab" style="left:8px">remate esp. ${eur(k.finalEsp)}</div>
+            ${k.marginReal>0?`<div class="mMarginLab" style="right:8px">margen ${eur(k.marginReal)}</div>`:""}
+          </div>
+          <div class="mlabels"><span>Coste esperado de adquisición</span><span class="mkt">Precio venta est. ${eur(mkt)}</span></div>
+        </div>
+        <button class="expandbtn" onclick="this.closest('.card').classList.toggle('open')"><span class="chev">▸</span> Ver dossier de inversión</button>
+      </div>
+      ${dossier(d,k)}
+    </div>
+  </article>`;
+}
+
+function dossier(d,k){
+  const chip=v=>{const g=v>0.6,m=v>=0.4&&v<=0.6;return `<span class="chip ${g?'p':m?'z':'n'}">${Math.round(v*100)}</span>`;};
+  const risksHtml = k.risks.length ? k.risks.map(r=>`<div class="risk ${r.lvl}"><span class="lv">${r.lvl.toUpperCase()}</span><span>${r.txt}</span></div>`).join("")
+    : `<div class="risk info"><span class="lv">OK</span><span>Sin riesgos relevantes detectados en el edicto. Verificar igualmente la nota simple.</span></div>`;
+  return `<div class="dossier">
+    <div class="dgrid">
+      <div class="dsec">
+        <h4>Datos del bien</h4>
+        <div class="drow"><span>Tipo</span><span>${d.tipo}${d.cuota<100?` · ${d.cuota}% proindiviso`:''}</span></div>
+        <div class="drow"><span>Dirección</span><span>${d.addr}</span></div>
+        <div class="drow"><span>Municipio</span><span>${d.muni} (${d.prov})</span></div>
+        <div class="drow"><span>Superficie</span><span>${d.m2} m²</span></div>
+        <div class="drow"><span>Año</span><span>${d.anyo??"—"}</span></div>
+        <div class="drow"><span>Ref. catastral</span><span>${d.cat}</span></div>
+        <div class="drow"><span>Situación posesoria</span><span>${d.pos}</span></div>
+        <div class="drow"><span>Visitable</span><span>${d.visitable?"Sí":"No"}</span></div>
+        <div class="drow"><span>Organismo</span><span>${d.org}</span></div>
+      </div>
+      <div class="dsec">
+        <h4>Economía y competencia</h4>
+
+        <div class="dsub">La subasta</div>
+        <div class="drow"><span>Valor de subasta (tasación) · base 70/50%</span><span>${eur(d.valorSubasta)}</span></div>
+        <div class="drow"><span>Importe de salida</span><span>${eur(d.salida)}</span></div>
+        <div class="drow"><span>Depósito (5%)</span><span>${eur(d.deposito)}</span></div>
+        <div class="drow"><span>Umbral 70% / 50%</span><span>${eur(k.u70)} / ${eur(k.u50)}</span></div>
+        <div class="drow"><span>Competencia zona · desiertas</span><span>${k.z.comp}/100 · ${k.z.desierta}%</span></div>
+        <div class="drow"><span>Cierre licitación</span><span>${new Date(d.fin).toLocaleDateString("es-ES")} · ${k.dias} d</span></div>
+
+        <div class="dsub">Coste de adquisición esperado</div>
+        <div class="drow add"><span>Puja estimada (remate según histórico)</span><span>${eur(k.finalEsp)}</span></div>
+        <div class="drow add"><span>+ ITP 10% (Cataluña, sobre remate)</span><span>${eur(itp(k.finalEsp))}</span></div>
+        <div class="drow add"><span>+ Cargas subsistentes</span><span>${eur(d.cargas)}</span></div>
+        <div class="drow tot"><span>= Coste total esperado</span><span>${eur(k.costeFinal)}</span></div>
+
+        <div class="dsub">Valoración de mercado y margen</div>
+        <div class="drow"><span>Precio de venta estimado (comparables)</span><span>${eur(d.mercadoEst)}</span></div>
+        <div class="drow"><span>Base de la valoración</span><span>≈ ${k.eurM2Venta?k.eurM2Venta.toLocaleString("es-ES"):'—'} €/m² zona · provisional</span></div>
+        <div class="drow"><span>Alquiler mensual estimado</span><span>${d.alquilerEst>0?eur(d.alquilerEst)+"/mes":"—"}</span></div>
+        <div class="roiviz">
+          <div class="roibar">
+            <div class="inv" style="width:${clamp(k.costeFinal/d.mercadoEst)*100}%">Inversión ${eur(k.costeFinal)}</div>
+            ${k.marginReal>0?`<div class="ben" style="width:${clamp(k.marginReal/d.mercadoEst)*100}%">+${eur(k.marginReal)}</div>`:""}
+          </div>
+          <div class="roinum"><span>Vendes por <b>${eur(d.mercadoEst)}</b></span><span class="big ${k.roi>0?'pos':'neg'}">ROI ${pct(k.roi)}</span></div>
+        </div>
+        <div class="drow"><span>Rentabilidad bruta (si se alquila)</span><span>${d.alquilerEst>0?(k.yieldReal*100).toFixed(1)+"%":"—"}</span></div>
+      </div>
+    </div>
+    <div class="risklist"><h4 style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--petrol-2);font-weight:700;margin:4px 0 2px">Alertas de riesgo</h4>${risksHtml}</div>
+    <div class="why"><b>Por qué ${k.score}/100.</b> Factores (0–100):
+      margen realizable ${chip(k.subs.sMargin)} · probabilidad ${chip(k.subs.sProb)} · cargas ${chip(k.subs.sCargas)} · posesión ${chip(k.subs.sPos)} · liquidez ${chip(k.subs.sLiq)} · rentabilidad ${chip(k.subs.sYield)}.
+      ${k.marginReal>0?`Se espera adjudicación en <b>${eur(k.finalEsp)}</b>; con coste total de <b>${eur(k.costeFinal)}</b> y venta estimada de <b>${eur(d.mercadoEst)}</b>, el beneficio es <b>${eur(k.marginReal)}</b> (<b>ROI ${pct(k.roi)}</b> sobre lo invertido) con <b>${pct(k.probConseguir)}</b> de probabilidad de llevártelo.`
+        :`El remate esperado deja el coste por encima del precio de venta: sin margen con los supuestos actuales.`}
+    </div>
+    <div class="dlinks">
+      <a class="dlink" href="https://subastas.boe.es/detalleSubasta.php?idSub=${d.id}" target="_blank" rel="noopener">Ficha en el BOE ↗</a>
+      <a class="dlink ghost" href="https://www1.sedecatastro.gob.es/Cartografia/mapa.aspx?refcat=${d.cat}" target="_blank" rel="noopener">Catastro ↗</a>
+      <a class="dlink ghost" href="https://www.registradores.org" target="_blank" rel="noopener">Pedir nota simple ↗</a>
+      <a class="dlink ghost" href="https://www.google.com/maps/search/${encodeURIComponent(d.addr+', '+d.muni)}" target="_blank" rel="noopener">Ubicación ↗</a>
+    </div>
+  </div>`;
+}
+
+let segMe="";
+function render(){
+  const fProv=val("fProv"),fTipo=val("fTipo"),fPos=val("fPos"),fRisk=val("fRisk"),fSort=val("fSort");
+  const riskOrder={info:0,medio:1,alto:2};
+  let rows=data.filter(d=>
+    (!fProv||d.prov===fProv)&&(!fTipo||d.tipo===fTipo)&&(!fPos||d.pos===fPos)&&
+    (!segMe||d.k.segment===segMe)&&(riskOrder[d.k.topRisk]<=riskOrder[fRisk]));
+  const sorters={score:(a,b)=>b.k.score-a.k.score,roi:(a,b)=>b.k.roi-a.k.roi,marginReal:(a,b)=>b.k.marginReal-a.k.marginReal,
+    marginRealPct:(a,b)=>b.k.marginRealPct-a.k.marginRealPct,prob:(a,b)=>b.k.probConseguir-a.k.probConseguir,
+    days:(a,b)=>a.k.dias-b.k.dias};
+  rows.sort(sorters[fSort]);
+  document.getElementById("list").innerHTML = rows.length?rows.map(card).join(""):`<div class="empty">No hay subastas con estos filtros.</div>`;
+  document.getElementById("mCount").textContent=data.length;
+  document.getElementById("mMe").textContent=data.filter(d=>d.k.segment==="me").length;
+  document.getElementById("mRisk").textContent=data.filter(d=>d.k.topRisk==="alto").length;
+  document.getElementById("mDate").textContent=TODAY.toLocaleDateString("es-ES",{day:"2-digit",month:"short"});
+}
+function val(id){return document.getElementById(id).value;}
+["fProv","fTipo","fPos","fRisk","fSort"].forEach(id=>document.getElementById(id).addEventListener("change",render));
+document.querySelectorAll("#segMe button").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll("#segMe button").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on"); segMe=b.dataset.v; render();
+}));
+async function boot(){
+  try{
+    const r=await fetch("./data.json?v="+Date.now());
+    const j=await r.json();
+    AUCTIONS=j.auctions||[];
+    if(j.generated) TODAY=new Date(j.generated);
+  }catch(e){
+    document.getElementById("list").innerHTML='<div class="empty">No se pudo cargar data.json todavía. Cuando el rastreador corra por primera vez aparecerán aquí las subastas.</div>';
+    return;
+  }
+  data=AUCTIONS.map(a=>({...a,k:analyze(a)}));
+  fillSelect("fProv",data.map(d=>d.prov));
+  fillSelect("fTipo",data.map(d=>d.tipo));
+  render();
+}
+boot();
+</script>
+</body>
+</html>
