@@ -249,6 +249,7 @@ def main():
     nuevas = 0; docs = 0
     # --- diagnóstico: embudo de filtrado ---
     n_dias = 0; n_items = 0; n_subasta = 0; n_cat = 0; n_inmueble = 0
+    n_repe = 0; n_mueble = 0
     for i in range(DIAS_ATRAS):
         d = hoy - timedelta(days=i)
         root = fetch_sumario(d)
@@ -261,15 +262,18 @@ def main():
             cand = es_candidata(it)
             if not cand: continue
             n_cat += 1
-            if it["id"] in conocidas: continue
+            if it["id"] in conocidas: n_repe += 1; continue
             if docs >= MAX_DOCS: break
             muni, prov = cand
             det, txt = parse_documento(it["url_xml"]); docs += 1; time.sleep(0.25)
 
-            hay_inmueble = any(k in (it["titulo"]+" "+txt).lower() for k in KW_INMUEBLE)
-            no_inmueble  = any(k in txt.lower() for k in KW_NO_INMUEBLE)
-            if no_inmueble and not hay_inmueble:
-                continue
+            # Criterio: una subasta en Cataluña se ACEPTA por defecto; solo se
+            # descarta si es CLARAMENTE un bien mueble (vehículo, maquinaria…).
+            base = (it["titulo"] + " " + txt).lower()
+            hay_inmueble = any(k in base for k in KW_INMUEBLE)
+            es_mueble    = any(k in base for k in KW_NO_INMUEBLE)
+            if es_mueble and not hay_inmueble:
+                n_mueble += 1; continue
             n_inmueble += 1
 
             rec = {
@@ -292,6 +296,7 @@ def main():
 
     print(f"DIAG · dias con BOE: {n_dias} · anuncios totales: {n_items} · "
           f"con 'subasta': {n_subasta} · subastas en Cataluña: {n_cat} · "
+          f"repetidas/ya vistas: {n_repe} · descartadas por mueble: {n_mueble} · "
           f"inmuebles válidos: {n_inmueble}")
     if n_items == 0:
         print("DIAG · ¡0 anuncios leídos! Puede que la estructura del sumario no se "
