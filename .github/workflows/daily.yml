@@ -1,0 +1,36 @@
+name: Rastreo diario de subastas
+
+on:
+  schedule:
+    - cron: "0 5 * * *"      # 05:00 UTC = 07:00 (hora peninsular en verano)
+  workflow_dispatch:          # botón para ejecutarlo a mano cuando quieras
+
+permissions:
+  contents: write             # para poder commitear docs/data.json
+
+jobs:
+  rastrear:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el repo
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Ejecutar el rastreador
+        run: python scraper.py
+
+      - name: Publicar cambios en data.json
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/data.json
+          if git diff --staged --quiet; then
+            echo "Sin novedades hoy."
+          else
+            git commit -m "Actualización subastas $(date +%F)"
+            git push
+          fi
