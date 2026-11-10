@@ -1,7 +1,7 @@
 {
- "generated": "2026-11-09",
+ "generated": "2026-11-10",
  "source": "BOE datos abiertos",
- "count": 142,
+ "count": 143,
  "auctions": [
   {
    "id": "BOE-B-2026-29645",
@@ -3836,6 +3836,33 @@
    "flags": [],
    "mercadoEst": null,
    "alquilerEst": 0
+  },
+  {
+   "id": "BOE-B-2026-36781",
+   "org": "MINISTERIO DE IGUALDAD",
+   "tipo": "Local",
+   "addr": "Resolución de la Dirección Provincial de la Tesorería General de la Seguridad Social de Ta",
+   "muni": "Tarragona",
+   "prov": "Tarragona",
+   "boe_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-36781",
+   "first_seen": "2026-11-10",
+   "m2": 73,
+   "anyo": null,
+   "valorSubasta": null,
+   "salida": null,
+   "deposito": null,
+   "tramo": null,
+   "cargas": 0,
+   "cat": "2083217CF4528C0021PB",
+   "pos": "Desconocida",
+   "cuota": 100,
+   "viviendaHabitual": false,
+   "visitable": null,
+   "ini": null,
+   "fin": null,
+   "flags": [],
+   "mercadoEst": 138700,
+   "alquilerEst": 555
   }
  ]
 }
