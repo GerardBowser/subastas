@@ -1,7 +1,7 @@
 {
- "generated": "2026-11-12",
+ "generated": "2026-11-13",
  "source": "BOE datos abiertos",
- "count": 129,
+ "count": 130,
  "auctions": [
   {
    "id": "BOE-B-2026-30091",
@@ -3485,6 +3485,33 @@
    "flags": [],
    "mercadoEst": null,
    "alquilerEst": 0
+  },
+  {
+   "id": "BOE-B-2026-37216",
+   "org": "MINISTERIO DE INCLUSIÓN, SEGURIDAD SOCIAL Y MIGRACIONES",
+   "tipo": "Local",
+   "addr": "Resolución de la Dirección Provincial de la Tesorería General de la Seguridad Social de Ta",
+   "muni": "Tarragona",
+   "prov": "Tarragona",
+   "boe_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-37216",
+   "first_seen": "2026-11-13",
+   "m2": 73,
+   "anyo": null,
+   "valorSubasta": null,
+   "salida": null,
+   "deposito": null,
+   "tramo": null,
+   "cargas": 0,
+   "cat": "2083217CF4528C0021PB",
+   "pos": "Desconocida",
+   "cuota": 100,
+   "viviendaHabitual": false,
+   "visitable": null,
+   "ini": null,
+   "fin": null,
+   "flags": [],
+   "mercadoEst": 138700,
+   "alquilerEst": 555
   }
  ]
 }
